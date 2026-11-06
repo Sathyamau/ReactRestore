@@ -1,6 +1,7 @@
 
-import { AppBar, Box, List, ListItem, Toolbar, Typography } from "@mui/material";
+import { AppBar, Box, LinearProgress, List, ListItem, Toolbar, Typography } from "@mui/material";
 import { NavLink } from "react-router-dom";
+import { useAppSelector } from "../store/store";
 
 const midLinks = [
   { title: 'Catalog', path: '/catalog' },
@@ -22,6 +23,9 @@ const navStyles = {
 }; 
 
 export default function Navbar() {
+
+  const {isLoading} = useAppSelector(state => state.ui);
+
   return (
     <AppBar position="fixed">
       <Toolbar sx={{display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -55,6 +59,10 @@ export default function Navbar() {
           </List>
         </Box>      
       </Toolbar>
+      {isLoading && 
+        <Box sx={{ width: '100%' }}>
+          <LinearProgress color="secondary" />
+        </Box>}
     </AppBar>
   );
 }
