@@ -2,14 +2,42 @@ import { useParams } from "react-router-dom";
 import Grid2 from "@mui/material/Grid2/Grid2";
 import { Button, Divider, Table, TableBody, TableContainer, TextField, Typography, TableRow, TableCell } from "@mui/material";
 import { useFetchProductDetailsQuery } from "./CatalogAPI";
+import { useFetchBasketQuery } from "../basket/BasketApi";
+import { useRemoveItemFromBasketMutation, useAddItemToBasketMutation } from "../basket/BasketApi";
+import { useState, useEffect, type ChangeEvent } from "react";
 
 export default function ProductDetails() {
   const { id } = useParams();
  
+  const [removeItemFromBasket] = useRemoveItemFromBasketMutation();
+  const [addBasketItem] = useAddItemToBasketMutation();
+  const {data: basket} = useFetchBasketQuery();
+  const item = basket?.items.find(i => i.productId === Number(id));
+
+  const [quantity, setQuantity] = useState(0);
+
+  useEffect(() => {
+    if(item) setQuantity(item.quantity);
+  }, [item]);
+
+
   const { data: product, isLoading, isError } = useFetchProductDetailsQuery(Number(id));
 
   if(isLoading || !product) return <Typography variant="h5">Loading...</Typography>;
   if(isError) return <Typography variant="h5">Error loading product</Typography>;
+
+  const handleUpdateBasket = () => {
+    const updateQuantity = item ? Math.abs(quantity - item.quantity) : quantity;
+    if(updateQuantity === 0) return;
+    if(item && quantity > item.quantity) addBasketItem({ product, quantity: updateQuantity });
+    if(item && quantity < item.quantity) removeItemFromBasket({ productId: Number(id), quantity: updateQuantity });
+    if(!item) addBasketItem({ product, quantity: updateQuantity });
+  }
+
+  const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
+   const value = Number(event.currentTarget.value);
+   if (value >= 0) setQuantity(value);
+  }
 
 const productDetails = [
   { label: 'Name', value: product.name },
@@ -58,11 +86,16 @@ const productDetails = [
                 label="Quantity in basket"
                 type="number"
                 fullWidth
-                defaultValue={1}
+                value={quantity}
+                onChange={handleInputChange}
               />
             </Grid2>
             <Grid2 size={6}>
-              <Button sx={{ height: '55px' }} color="primary" variant="contained" size="large" fullWidth>Add to Basket</Button>
+              <Button sx={{ height: '55px' }} color="primary" variant="contained" size="large" fullWidth
+              onClick={handleUpdateBasket}
+              disabled={quantity === item?.quantity || !item && quantity ===0 }>
+                {item ? 'Update Basket' : 'Add to Basket'}
+              </Button>
             </Grid2>
         </Grid2>
       </Grid2>
