@@ -1,7 +1,7 @@
 import { useParams } from "react-router-dom";
 import Grid2 from "@mui/material/Grid2/Grid2";
 import { Button, Divider, Table, TableBody, TableContainer, TextField, Typography, TableRow, TableCell } from "@mui/material";
-import { useFetchProductDetailsQuery } from "./CatalogAPI";
+import { useFetchProductDetailsQuery } from "./catalogApi";
 import { useFetchBasketQuery } from "../basket/BasketApi";
 import { useRemoveItemFromBasketMutation, useAddItemToBasketMutation } from "../basket/BasketApi";
 import { useState, useEffect, type ChangeEvent } from "react";
