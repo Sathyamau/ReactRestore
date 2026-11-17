@@ -18,7 +18,6 @@ const debouncedSearch = debounce(event => {
     dispatch(setSearchTerm(event.target.value));
 }, 500);
 
-
   return (
      <TextField label="Search Products" variant="outlined" fullWidth value={term} 
      onChange={(e) => {

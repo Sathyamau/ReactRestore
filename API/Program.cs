@@ -1,4 +1,6 @@
 using API.Data;
+using API.Entities;
+using Microsoft.AspNetCore.Identity;
 using API.Middleware;
 using Microsoft.EntityFrameworkCore;
 
@@ -11,7 +13,10 @@ builder.Services.AddDbContext<StoreContext>(options =>
 );
 builder.Services.AddCors();
 builder.Services.AddTransient<ExceptionMiddleware>();
-
+builder.Services.AddIdentityApiEndpoints<User>(opt =>
+{
+  opt.User.RequireUniqueEmail = false;
+}).AddRoles<IdentityRole>().AddEntityFrameworkStores<StoreContext>();
 
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 // builder.Services.AddOpenApi();
@@ -33,8 +38,10 @@ app.UseCors(opt =>
 {
   opt.AllowAnyHeader().AllowAnyMethod().AllowCredentials().WithOrigins("https://localhost:3000");
 });
-
+app.UseAuthentication();
+app.UseAuthorization();
 app.MapControllers();
+app.MapGroup("api").MapIdentityApi<User>();
 
 DbInitializer.InitDb(app);
 

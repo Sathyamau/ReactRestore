@@ -2,7 +2,9 @@
 import { AppBar, Box, LinearProgress, List, ListItem, Toolbar, Typography } from "@mui/material";
 import { NavLink } from "react-router-dom";
 import { useAppSelector } from "../store/store";
-import { useFetchBasketQuery } from "../../features/basket/BasketApi";
+import { useUserInfoQuery } from "../../features/account/accountApi";
+import { useFetchBasketQuery } from "../../features/basket/basketApi";
+import UserMenu from "./UserMenu";
 
 
 const midLinks = [
@@ -25,7 +27,11 @@ const navStyles = {
 }; 
 
 export default function Navbar() {
-
+  console.log("start fetching nav bar user info:");
+  const { data: user } = useUserInfoQuery();
+   console.log(user);
+  console.log("stop fetching nav bar user info:");
+ 
   const {isLoading} = useAppSelector(state => state.ui);
   const {data: basket } = useFetchBasketQuery();
 
@@ -52,7 +58,10 @@ export default function Navbar() {
         <Box  display="flex" justifyContent="flex-end" alignItems="center">
           <Typography component={NavLink} sx={navStyles} to="/basket"  variant="h6">BASKET ({itemCount})</Typography>
         </Box>
-        <Box  display="flex" alignItems="center">
+        {user ? (
+          <UserMenu user={user}/>
+        ):(
+          <Box  display="flex" alignItems="center">
           <List sx={{ display: 'flex' }}>
             {rightLinks.map(({ title, path }) => (
               <ListItem
@@ -66,6 +75,8 @@ export default function Navbar() {
             ))}
           </List>
         </Box>      
+        )}
+        
       </Toolbar>
       {isLoading && 
         <Box sx={{ width: '100%' }}>

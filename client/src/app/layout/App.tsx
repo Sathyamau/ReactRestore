@@ -5,7 +5,7 @@ import CssBaseline from "@mui/material/CssBaseline"
 import Navbar from "./NavBar"
 
 function App() {
-  const darkMode = false;
+  const darkMode = true;
   const palletType = darkMode ? 'dark' : 'light';
 
   const theme = createTheme({
